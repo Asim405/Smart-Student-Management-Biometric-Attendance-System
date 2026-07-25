@@ -11,6 +11,7 @@ export default function BiometricHubScreen() {
     loadDevices();
 
     // Live connectivity + attendance feed. The ESP32 hitting
+    
     // /api/attendance/mark-biometric triggers the server to emit
     // 'attendance:new', which every connected mobile client receives here.
     const socket = connectSocket();
