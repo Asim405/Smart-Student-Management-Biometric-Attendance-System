@@ -59,7 +59,7 @@ export default function DashboardScreen() {
         <StatCard label="⚠️ Lower" value={data?.tier_distribution?.lower ?? 0} accent="#B91C1C" />
       </View>
 
-      <Text className="text-base font-bold text-gray-900 mt-5 mb-2.5">Your Courses</Text>
+      <Text className="text-base font-bold text-gray-900 mt-5 mb-2.5">Your  Courses</Text>
       {data?.courses?.map((c) => (
         <View key={c.id} className="bg-white rounded-xl p-3 mb-2">
           <Text className="font-bold text-gray-900">{c.course_code} — {c.title}</Text>
