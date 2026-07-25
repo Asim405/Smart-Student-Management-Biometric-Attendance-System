@@ -7,7 +7,8 @@ import PerformanceTrackerScreen from '../screens/student/PerformanceTrackerScree
 
 const Tab = createBottomTabNavigator();
 
-const ICONS = { Overview: '🎓', Enroll: '📚', Performance: '📈' };
+// The icons are just emojis for now, but we can replace them with proper icons later if needed.
+const ICONS = { Overview: '🎓', Enroll: '📚', Performance: '📈' }; 
 
 export default function StudentNavigator() {
   return (
