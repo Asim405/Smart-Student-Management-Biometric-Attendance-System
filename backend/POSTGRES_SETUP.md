@@ -19,7 +19,32 @@ Install PostgreSQL
 Windows (recommended: PostgreSQL installer)
 1. Download the installer from https://www.postgresql.org/download/windows/
 2. Run the installer and note the superuser password (default `postgres`).
-3. Add PostgreSQL's `bin` folder to your `PATH` if you want to use `psql` from PowerShell.
+3. During install, accept the default port `5432` and choose to install the command-line tools.
+4. Optionally add PostgreSQL's `bin` folder to your Windows `PATH` so you can run `psql` from PowerShell.
+
+Windows step-by-step
+- Open PowerShell as a normal user.
+- If `psql` is available on your `PATH`, run:
+  ```powershell
+  psql -U postgres
+  ```
+- If `psql` is not found, use the full path to the installed binary, for example:
+  ```powershell
+  "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres
+  ```
+- In `psql`, create the project user and database:
+  ```sql
+  CREATE ROLE smart_user WITH LOGIN PASSWORD 'smart_password';
+  CREATE DATABASE smart_db OWNER smart_user;
+  GRANT ALL PRIVILEGES ON DATABASE smart_db TO smart_user;
+  \q
+  ```
+- Import the schema using PowerShell from the `backend` folder:
+  ```powershell
+  cd C:\Users\Asim sultan\Desktop\smart-student-system\backend
+  psql -h localhost -U smart_user -d smart_db -f schema.sql
+  ```
+- If `psql` still is not found, replace `psql` with the full path to `psql.exe`.
 
 macOS (Homebrew)
 ```bash
