@@ -9,6 +9,7 @@ export default function AcademicOverviewScreen() {
   const { logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  
 
   const load = useCallback(async () => {
     try {
