@@ -1,5 +1,4 @@
 -- =====================================================================
--- Smart Student Management & Biometric Attendance System
 -- Database Schema (PostgreSQL syntax; MySQL notes given where it differs)
 -- =====================================================================
 

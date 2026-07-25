@@ -34,33 +34,87 @@ project/
 
 ## 2. Backend Setup (`/backend`)
 
+### Prerequisites
+- Node.js installed
+- PostgreSQL installed and running
+- `createdb` / `psql` available on your PATH
+
+### 2.1 Install backend dependencies
 ```bash
 cd backend
 npm install
-cp .env.example .env        # then edit DB credentials, JWT_SECRET, HARDWARE_SHARED_SECRET
-
-# create the database, then load schema + dummy data
-createdb student_system
-psql -U postgres -d student_system -f schema.sql
-
-npm run dev                 # nodemon, http://localhost:5000
 ```
 
-Seeded login (all seeded users share the password `Passw0rd!`):
+### 2.2 Create `.env`
+Copy the example env file and edit the values:
+
+```bash
+cd backend
+copy .env.example .env
+```
+
+Open `backend/.env` and set the database credentials if they differ from the defaults:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=student_system
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+JWT_SECRET=change_this_to_a_long_random_string
+JWT_EXPIRES_IN=7d
+HARDWARE_SHARED_SECRET=change_this_too
+```
+
+> `backend/config/db.js` reads these values and creates the PostgreSQL connection pool.
+
+### 2.3 Create the PostgreSQL database and load schema
+Run one of these command sets depending on your environment:
+
+Option A: using `createdb`:
+```bash
+cd backend
+createdb student_system
+psql -U postgres -d student_system -f schema.sql
+```
+
+Option B: using `psql` directly:
+```bash
+cd backend
+psql -U postgres -c "CREATE DATABASE student_system;"
+psql -U postgres -d student_system -f schema.sql
+```
+
+If your PostgreSQL user or password are different, update `backend/.env` and use:
+```bash
+psql -h <host> -p <port> -U <user> -d student_system -f schema.sql
+```
+
+### 2.4 Start the backend server
+```bash
+cd backend
+npm run dev
+```
+
+The backend should now be running at `http://localhost:5000`.
+
+### 2.5 Default seeded users
+The schema seeds default users with the password `Passw0rd!`.
 | Email | Role |
 |---|---|
 | teacher@school.edu | admin |
 | bilal@school.edu | student |
 | hina@school.edu | student |
 
-> Note: the bcrypt hash in `schema.sql` is a placeholder — regenerate it
-> with `node -e "console.log(require('bcryptjs').hashSync('Passw0rd!', 10))"`
-> and paste the real hash into `schema.sql` before seeding, or just register
-> fresh accounts through `POST /api/auth/register`.
+> If you want to reset the seeded password hash, run:
+> `node -e "console.log(require('bcryptjs').hashSync('Passw0rd!', 10))"`
+> and replace the hash in `schema.sql` before seeding.
 
 ### Environment variables (`.env`)
-See `.env.example` — DB connection, `JWT_SECRET`, `JWT_EXPIRES_IN`, and
-`HARDWARE_SHARED_SECRET` (the value the ESP32 must send in `X-Device-Key`).
+The backend expects these values in `backend/.env`:
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+- `JWT_SECRET`, `JWT_EXPIRES_IN`
+- `HARDWARE_SHARED_SECRET`
 
 ### API Reference
 
