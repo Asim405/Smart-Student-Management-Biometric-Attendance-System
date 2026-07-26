@@ -25,21 +25,25 @@ async function register(req, res) {
       return res.status(400).json({ error: 'role must be "admin" or "student"' });
     }
 
-    const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
-    if (existing.rows.length > 0) {
+    const [existing] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
       return res.status(409).json({ error: 'Email already registered' });
     }
 
     const password_hash = await bcrypt.hash(password, 10);
 
-    const result = await db.query(
+    const [result] = await db.query(
       `INSERT INTO users (name, email, password_hash, role, student_code)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, name, email, role, student_code`,
+       VALUES (?, ?, ?, ?, ?)`,
       [name, email, password_hash, role, role === 'student' ? student_code || null : null]
     );
 
-    const user = result.rows[0];
+    // Fetch the created user to return it
+    const [userRows] = await db.query(
+      'SELECT id, name, email, role, student_code FROM users WHERE id = ?',
+      [result.insertId]
+    );
+    const user = userRows[0];
     const token = signToken(user);
 
     res.status(201).json({ token, user });
@@ -57,8 +61,8 @@ async function login(req, res) {
       return res.status(400).json({ error: 'email and password are required' });
     }
 
-    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-    const user = result.rows[0];
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    const user = rows[0];
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });

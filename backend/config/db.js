@@ -1,21 +1,24 @@
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // Single shared connection pool. All controllers import `query` from here
 // instead of opening their own client, so connections are reused properly.
-const pool = new Pool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle Postgres client', err);
+  console.error('Unexpected error on idle MySQL connection', err);
 });
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
+  query: (text, params) => pool.execute(text, params),
   pool,
 };

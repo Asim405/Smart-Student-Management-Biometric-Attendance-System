@@ -1,26 +1,26 @@
 -- =====================================================================
--- Database Schema (PostgreSQL syntax; MySQL notes given where it differs)
+-- Database Schema (MySQL syntax)
 -- =====================================================================
 
-DROP TABLE IF EXISTS attendance_logs CASCADE;
-DROP TABLE IF EXISTS marks CASCADE;
-DROP TABLE IF EXISTS enrollments CASCADE;
-DROP TABLE IF EXISTS biometric_devices CASCADE;
-DROP TABLE IF EXISTS courses CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS attendance_logs;
+DROP TABLE IF EXISTS marks;
+DROP TABLE IF EXISTS enrollments;
+DROP TABLE IF EXISTS biometric_devices;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS users;
 
 -- =====================================================================
 -- USERS  (both admins/teachers and students live here, split by `role`)
 -- =====================================================================
 CREATE TABLE users (
-    id              SERIAL PRIMARY KEY,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
     name            VARCHAR(120)        NOT NULL,
     email           VARCHAR(150)        NOT NULL UNIQUE,
     password_hash   VARCHAR(255)        NOT NULL,
     role            VARCHAR(20)         NOT NULL CHECK (role IN ('admin', 'student')),
     student_code    VARCHAR(30)         UNIQUE,        -- e.g. "BSCS-2023-014", NULL for admins
     fingerprint_id  INTEGER             UNIQUE,        -- id stored on the AS608 sensor, NULL until enrolled
-    cgpa            NUMERIC(3,2)        DEFAULT 0.00,
+    cgpa            DECIMAL(3,2)        DEFAULT 0.00,
     earned_credits  INTEGER             DEFAULT 0,
     remaining_credits INTEGER           DEFAULT 0,
     created_at      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
@@ -30,7 +30,7 @@ CREATE TABLE users (
 -- COURSES
 -- =====================================================================
 CREATE TABLE courses (
-    id              SERIAL PRIMARY KEY,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
     course_code     VARCHAR(20)         NOT NULL UNIQUE,
     title           VARCHAR(150)        NOT NULL,
     credit_hours    INTEGER             NOT NULL DEFAULT 3,
@@ -43,7 +43,7 @@ CREATE TABLE courses (
 -- ENROLLMENTS  (student <-> course)
 -- =====================================================================
 CREATE TABLE enrollments (
-    id              SERIAL PRIMARY KEY,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
     student_id      INTEGER             NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     course_id       INTEGER             NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
     enrolled_at     TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
@@ -54,16 +54,16 @@ CREATE TABLE enrollments (
 -- MARKS  (quiz / assignment / mid / final per student per course)
 -- =====================================================================
 CREATE TABLE marks (
-    id              SERIAL PRIMARY KEY,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
     student_id      INTEGER             NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     course_id       INTEGER             NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
-    quiz            NUMERIC(5,2)        DEFAULT 0,
-    assignment      NUMERIC(5,2)        DEFAULT 0,
-    mid             NUMERIC(5,2)        DEFAULT 0,
-    final           NUMERIC(5,2)        DEFAULT 0,
+    quiz            DECIMAL(5,2)        DEFAULT 0,
+    assignment      DECIMAL(5,2)        DEFAULT 0,
+    mid             DECIMAL(5,2)        DEFAULT 0,
+    final           DECIMAL(5,2)        DEFAULT 0,
     -- weighted total, kept in sync by the controller (10/10/30/50 split)
-    total_percentage NUMERIC(5,2)       DEFAULT 0,
-    updated_at      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+    total_percentage DECIMAL(5,2)       DEFAULT 0,
+    updated_at      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (student_id, course_id)
 );
 
@@ -71,7 +71,7 @@ CREATE TABLE marks (
 -- BIOMETRIC DEVICES  (ESP32 stations, one per classroom typically)
 -- =====================================================================
 CREATE TABLE biometric_devices (
-    id              SERIAL PRIMARY KEY,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
     device_key      VARCHAR(100)        NOT NULL UNIQUE, -- shared secret the ESP32 sends
     room_label      VARCHAR(80),
     course_id       INTEGER             REFERENCES courses(id) ON DELETE SET NULL,
@@ -83,7 +83,7 @@ CREATE TABLE biometric_devices (
 -- ATTENDANCE LOGS  (one row per scan)
 -- =====================================================================
 CREATE TABLE attendance_logs (
-    id              SERIAL PRIMARY KEY,
+    id              INT AUTO_INCREMENT PRIMARY KEY,
     student_id      INTEGER             NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     course_id       INTEGER             NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
     device_id       INTEGER             REFERENCES biometric_devices(id) ON DELETE SET NULL,

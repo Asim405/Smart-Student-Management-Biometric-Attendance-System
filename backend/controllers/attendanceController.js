@@ -15,38 +15,45 @@ async function markBiometric(req, res) {
     }
 
     const deviceResult = await db.query(
-      `SELECT id, course_id, room_label FROM biometric_devices WHERE device_key = $1`,
+      `SELECT id, course_id, room_label FROM biometric_devices WHERE device_key = ?`,
       [device_key]
     );
-    const device = deviceResult.rows[0];
+    const [deviceRows] = deviceResult;
+    const device = deviceRows[0];
     if (!device) return res.status(404).json({ error: 'Unknown device_key' });
     if (!device.course_id) return res.status(409).json({ error: 'Device is not assigned to a course/session' });
 
     const studentResult = await db.query(
-      `SELECT id, name, student_code FROM users WHERE fingerprint_id = $1 AND role = 'student'`,
+      `SELECT id, name, student_code FROM users WHERE fingerprint_id = ? AND role = 'student'`,
       [fingerprint_id]
     );
-    const student = studentResult.rows[0];
+    const [studentRows] = studentResult;
+    const student = studentRows[0];
     if (!student) return res.status(404).json({ error: 'No student matches this fingerprint_id' });
 
-    const enrolled = await db.query(
-      `SELECT 1 FROM enrollments WHERE student_id = $1 AND course_id = $2`,
+    const [enrolled] = await db.query(
+      `SELECT 1 FROM enrollments WHERE student_id = ? AND course_id = ?`,
       [student.id, device.course_id]
     );
-    if (!enrolled.rows[0]) {
+    if (!enrolled[0]) {
       return res.status(409).json({ error: 'Student is not enrolled in the course tied to this device' });
     }
 
     // Mark device online / update heartbeat
     await db.query(
-      `UPDATE biometric_devices SET status = 'online', last_seen_at = CURRENT_TIMESTAMP WHERE id = $1`,
+      `UPDATE biometric_devices SET status = 'online', last_seen_at = CURRENT_TIMESTAMP WHERE id = ?`,
       [device.id]
     );
 
     const logResult = await db.query(
       `INSERT INTO attendance_logs (student_id, course_id, device_id, status)
-       VALUES ($1, $2, $3, 'present') RETURNING *`,
+       VALUES (?, ?, ?, 'present')`,
       [student.id, device.course_id, device.id]
+    );
+    
+    const [logRows] = await db.query(
+      'SELECT * FROM attendance_logs WHERE id = ?',
+      [logResult[0].insertId]
     );
 
     const payload = {
@@ -54,14 +61,14 @@ async function markBiometric(req, res) {
       course_id: device.course_id,
       device_id: device.id,
       room_label: device.room_label,
-      scanned_at: logResult.rows[0].scanned_at,
+      scanned_at: logRows[0].scanned_at,
     };
 
     // Broadcast to every connected mobile client so the teacher's
     // Biometric Hub and the student's own attendance screen update live.
     if (io) io.emit('attendance:new', payload);
 
-    res.status(201).json({ log: logResult.rows[0], student });
+    res.status(201).json({ log: logRows[0], student });
   } catch (err) {
     console.error('markBiometric error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -71,10 +78,10 @@ async function markBiometric(req, res) {
 // GET /api/attendance/devices  — device online/offline status for the Biometric Hub card
 async function deviceStatus(req, res) {
   try {
-    const result = await db.query(
+    const [result] = await db.query(
       `SELECT id, device_key, room_label, course_id, status, last_seen_at FROM biometric_devices ORDER BY id`
     );
-    res.json({ devices: result.rows });
+    res.json({ devices: result });
   } catch (err) {
     console.error('deviceStatus error:', err);
     res.status(500).json({ error: 'Internal server error' });

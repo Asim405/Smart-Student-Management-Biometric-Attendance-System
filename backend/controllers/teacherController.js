@@ -24,48 +24,48 @@ async function dashboard(req, res) {
   try {
     const teacherId = req.user.id;
 
-    const coursesResult = await db.query(
+    const [coursesResult] = await db.query(
       `SELECT c.id, c.course_code, c.title, c.seat_limit,
-              COUNT(e.student_id)::int AS enrolled_count
+              COUNT(e.student_id) AS enrolled_count
        FROM courses c
        LEFT JOIN enrollments e ON e.course_id = c.id
-       WHERE c.teacher_id = $1
-       GROUP BY c.id
+       WHERE c.teacher_id = ?
+       GROUP BY c.id, c.course_code, c.title, c.seat_limit
        ORDER BY c.course_code`,
       [teacherId]
     );
 
-    const marksResult = await db.query(
+    const [marksResult] = await db.query(
       `SELECT m.student_id, m.course_id, m.total_percentage
        FROM marks m
        JOIN courses c ON c.id = m.course_id
-       WHERE c.teacher_id = $1`,
+       WHERE c.teacher_id = ?`,
       [teacherId]
     );
 
     const tierCounts = { top: 0, mid: 0, lower: 0 };
     let sum = 0;
-    marksResult.rows.forEach((row) => {
+    marksResult.forEach((row) => {
       tierCounts[tierFor(Number(row.total_percentage))]++;
       sum += Number(row.total_percentage);
     });
-    const classAverage = marksResult.rows.length
-      ? Number((sum / marksResult.rows.length).toFixed(2))
+    const classAverage = marksResult.length
+      ? Number((sum / marksResult.length).toFixed(2))
       : 0;
 
-    const devicesResult = await db.query(
+    const [devicesResult] = await db.query(
       `SELECT id, device_key, room_label, course_id, status, last_seen_at
        FROM biometric_devices
-       WHERE course_id IN (SELECT id FROM courses WHERE teacher_id = $1)`,
+       WHERE course_id IN (SELECT id FROM courses WHERE teacher_id = ?)`,
       [teacherId]
     );
 
     res.json({
-      courses: coursesResult.rows,
-      total_students: [...new Set(marksResult.rows.map(r => r.student_id))].length,
+      courses: coursesResult,
+      total_students: [...new Set(marksResult.map(r => r.student_id))].length,
       class_average: classAverage,
       tier_distribution: tierCounts,
-      devices: devicesResult.rows,
+      devices: devicesResult,
     });
   } catch (err) {
     console.error('teacher dashboard error:', err);
@@ -80,18 +80,18 @@ async function roster(req, res) {
     const { course_id } = req.query;
     if (!course_id) return res.status(400).json({ error: 'course_id query param required' });
 
-    const result = await db.query(
+    const [result] = await db.query(
       `SELECT u.id AS student_id, u.name, u.student_code,
               m.quiz, m.assignment, m.mid, m.final, m.total_percentage
        FROM enrollments e
        JOIN users u ON u.id = e.student_id
        LEFT JOIN marks m ON m.student_id = u.id AND m.course_id = e.course_id
-       WHERE e.course_id = $1
+       WHERE e.course_id = ?
        ORDER BY u.name`,
       [course_id]
     );
 
-    const roster = result.rows.map((r) => ({
+    const roster = result.map((r) => ({
       ...r,
       tier: r.total_percentage != null ? tierFor(Number(r.total_percentage)) : null,
     }));
@@ -118,17 +118,24 @@ async function upsertMarks(req, res) {
       quiz: quiz || 0, assignment: assignment || 0, mid: mid || 0, final: final || 0,
     });
 
-    const result = await db.query(
-      `INSERT INTO marks (student_id, course_id, quiz, assignment, mid, final, total_percentage, updated_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7, CURRENT_TIMESTAMP)
-       ON CONFLICT (student_id, course_id)
-       DO UPDATE SET quiz = $3, assignment = $4, mid = $5, final = $6,
-                     total_percentage = $7, updated_at = CURRENT_TIMESTAMP
-       RETURNING *`,
-      [student_id, course_id, quiz || 0, assignment || 0, mid || 0, final || 0, total_percentage]
-    );
+    try {
+      const [result] = await db.query(
+        `INSERT INTO marks (student_id, course_id, quiz, assignment, mid, final, total_percentage)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE quiz = ?, assignment = ?, mid = ?, final = ?, total_percentage = ?`,
+        [student_id, course_id, quiz || 0, assignment || 0, mid || 0, final || 0, total_percentage,
+         quiz || 0, assignment || 0, mid || 0, final || 0, total_percentage]
+      );
 
-    res.json({ marks: result.rows[0], tier: tierFor(total_percentage) });
+      const [marksRows] = await db.query(
+        'SELECT * FROM marks WHERE student_id = ? AND course_id = ?',
+        [student_id, course_id]
+      );
+
+      res.json({ marks: marksRows[0], tier: tierFor(total_percentage) });
+    } catch (err) {
+      throw err;
+    }
   } catch (err) {
     console.error('upsertMarks error:', err);
     res.status(500).json({ error: 'Internal server error' });
