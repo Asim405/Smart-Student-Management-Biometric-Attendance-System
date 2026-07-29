@@ -3,6 +3,7 @@ require('dotenv').config();
 
 // Single shared connection pool. All controllers import `query` from here
 // instead of opening their own client, so connections are reused properly.
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
