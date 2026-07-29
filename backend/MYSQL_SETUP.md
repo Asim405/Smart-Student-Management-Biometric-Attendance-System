@@ -32,7 +32,7 @@ This document describes how to install, configure, and initialize MySQL for the 
   ```
   (Enter the password you set during MySQL installation)
 
-- In the MySQL prompt, create the project user and database:
+- ### In the MySQL prompt, create the project user and database:
   ```sql
   CREATE USER 'smart_user'@'localhost' IDENTIFIED BY 'smart_password';
   CREATE DATABASE smart_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
