@@ -101,6 +101,7 @@ async function enroll(req, res) {
 
 // GET /api/student/attendance/:course_id
 // Attendance % for a given course, used for the 75% warning indicator.
+
 async function attendanceForCourse(req, res) {
   try {
     const studentId = req.user.id;
