@@ -10,6 +10,7 @@ const Tab = createBottomTabNavigator();
 
 const ICONS = { Dashboard: '📊', Biometric: '🔒', Roster: '📋', Tiers: '🏆' };
 
+
 export default function AdminNavigator() {
   return (
     <Tab.Navigator
