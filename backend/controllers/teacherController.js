@@ -43,6 +43,7 @@ async function dashboard(req, res) {
       [teacherId]
     );
 
+    
     const tierCounts = { top: 0, mid: 0, lower: 0 };
     let sum = 0;
     marksResult.forEach((row) => {
