@@ -7,6 +7,7 @@
 function initSockets(io) {
   io.on('connection', (socket) => {
     console.log(`Socket connected: ${socket.id}`);
+    console.log(`Total connected sockets: ${io.engine.clientsCount}`);
 
     socket.on('disconnect', () => {
       console.log(`Socket disconnected: ${socket.id}`);
