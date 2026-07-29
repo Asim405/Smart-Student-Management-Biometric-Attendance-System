@@ -2,6 +2,7 @@
 
 This document describes how to install, configure, and initialize MySQL for the `smart-student-system` backend.
 
+
 ## Contents
 - Prerequisites
 - Install MySQL (Windows / macOS / Linux)

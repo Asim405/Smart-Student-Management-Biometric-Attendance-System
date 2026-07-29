@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 // Verifies the Bearer token and attaches { id, role, email } to req.user
+
 function verifyToken(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
