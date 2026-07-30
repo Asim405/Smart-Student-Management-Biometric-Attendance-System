@@ -16,9 +16,7 @@ export default function TierBadge({ tier }) {
   );
 }
 
-// Exported so screens can compute a tier client-side for immediate
-// feedback (e.g. while a teacher is typing marks) without waiting on
-// a server round trip. The backend remains the source of truth.
+
 export function tierFromPercentage(pct) {
   if (pct >= 80) return 'top';
   if (pct >= 50) return 'mid';
