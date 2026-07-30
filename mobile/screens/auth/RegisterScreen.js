@@ -20,6 +20,7 @@ export default function RegisterScreen({ navigation }) {
       const msg = err.response?.data?.error || 'Registration failed.';
       Alert.alert('Registration failed', msg);
     } finally {
+      
       setSubmitting(false);
     }
   }
