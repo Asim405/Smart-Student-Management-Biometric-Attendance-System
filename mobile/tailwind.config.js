@@ -10,7 +10,7 @@ module.exports = {
         brandSky: '#0EA5E9',
         brandAmber: '#F59E0B',
         tierTopBg: '#DCFCE7', tierTopFg: '#15803D',
-        tierMidBg: '#DBEAFE', tierMidFg: '#1D4ED8',
+        tierMidBg: '#DBEAFE', tierMidFg: '#2757db',
         tierLowBg: '#FEE2E2', tierLowFg: '#B91C1C',
       },
     },
