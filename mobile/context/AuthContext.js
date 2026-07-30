@@ -7,23 +7,36 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);       // { id, name, email, role, ... }
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);  // true while we check AsyncStorage on boot
+  const [loading, setLoading] = useState(true);  // true while checking AsyncStorage on boot
 
   useEffect(() => {
-    (async () => {
+    let isMounted = true;
+
+    async function loadStoredAuth() {
       try {
         const [storedToken, storedUser] = await Promise.all([
           AsyncStorage.getItem('token'),
           AsyncStorage.getItem('user'),
         ]);
-        if (storedToken && storedUser) {
+
+        if (isMounted && storedToken && storedUser) {
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
         }
+      } catch (error) {
+        console.error('Error loading auth state from storage:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    })();
+    }
+
+    loadStoredAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   async function login(email, password) {
