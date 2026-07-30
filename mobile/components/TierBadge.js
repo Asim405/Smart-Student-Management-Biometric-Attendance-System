@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 const CONFIG = {
-  top:   { label: '🌟 Top Tier',          bg: 'bg-tierTopBg', fg: 'text-tierTopFg' },
-  mid:   { label: '🔷 Mid Tier',          bg: 'bg-tierMidBg', fg: 'text-tierMidFg' },
-  lower: { label: '⚠️ Needs Attention',   bg: 'bg-tierLowBg', fg: 'text-tierLowFg' },
+  Top:   { label: '🌟 Top Tier',          bg: 'bg-tierTopBg', fg: 'text-tierTopFg' },
+  Mid:   { label: '🔷 Mid Tier',          bg: 'bg-tierMidBg', fg: 'text-tierMidFg' },
+  Lower: { label: '⚠️ Needs Attention',   bg: 'bg-tierLowBg', fg: 'text-tierLowFg' },
 };
 
 export default function TierBadge({ tier }) {
