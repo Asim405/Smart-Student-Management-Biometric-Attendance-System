@@ -64,7 +64,7 @@ export default function PerformanceTrackerScreen() {
               backgroundGradientTo: '#fff',
               decimalPlaces: 0,
               color: (opacity = 1) => `rgba(79, 70, 229, ${opacity})`,
-              labelColor: () => '#6B7280',
+              labelColor: () => '#5f6673',
             }}
             style={{ borderRadius: 12 }}
           />
