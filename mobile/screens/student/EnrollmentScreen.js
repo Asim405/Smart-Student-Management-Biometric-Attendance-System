@@ -25,6 +25,7 @@ export default function EnrollmentScreen() {
       load();
     } catch (err) {
       Alert.alert('Enrollment failed', err.response?.data?.error || 'Could not enroll.');
+
     } finally {
       setEnrollingId(null);
     }
@@ -51,6 +52,7 @@ export default function EnrollmentScreen() {
             >
               <Text className="text-white font-bold text-xs">
                 {item.is_enrolled ? 'Enrolled' : full ? 'Full' : enrollingId === item.id ? '…' : 'Enroll Now'}
+                
               </Text>
             </TouchableOpacity>
           </View>
