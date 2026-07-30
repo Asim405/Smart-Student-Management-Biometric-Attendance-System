@@ -26,6 +26,7 @@ CREATE TABLE users (
     created_at      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- =====================================================================
 -- COURSES
 -- =====================================================================
@@ -50,7 +51,7 @@ CREATE TABLE enrollments (
     UNIQUE (student_id, course_id)
 );
 
--- =====================================================================
+
 -- MARKS  (quiz / assignment / mid / final per student per course)
 -- =====================================================================
 CREATE TABLE marks (
@@ -62,6 +63,7 @@ CREATE TABLE marks (
     mid             DECIMAL(5,2)        DEFAULT 0,
     final           DECIMAL(5,2)        DEFAULT 0,
     -- weighted total, kept in sync by the controller (10/10/30/50 split)
+    
     total_percentage DECIMAL(5,2)       DEFAULT 0,
     updated_at      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (student_id, course_id)
