@@ -43,7 +43,7 @@ export default function AcademicOverviewScreen() {
 
       <View className="flex-row -mx-1 mb-2">
         <StatCard label="CGPA" value={profile?.cgpa ?? '—'} accent="#4F46E5" />
-        <StatCard label="Current SGPA" value={profile?.sgpa ?? '—'} accent="#0EA5E9" />
+        <StatCard label="Current SGPA" value={profile?.sgpa ?? '—'} accent="#24adec" />
       </View>
       <View className="flex-row -mx-1 mb-2">
         <StatCard label="Earned Credits" value={profile?.earned_credits ?? '—'} accent="#15803D" />
