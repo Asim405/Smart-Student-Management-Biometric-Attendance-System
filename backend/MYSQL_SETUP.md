@@ -48,6 +48,7 @@ This document describes how to install, configure, and initialize MySQL for the 
   ```
   (Enter the password: `smart_password`)
 
+
 ### macOS (Homebrew)
 ```bash
 # Install MySQL via Homebrew
