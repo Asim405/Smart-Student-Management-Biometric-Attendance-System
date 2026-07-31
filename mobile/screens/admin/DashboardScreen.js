@@ -55,7 +55,7 @@ export default function DashboardScreen() {
       <Text className="text-base font-bold text-gray-900 mt-5 mb-2.5">Tier Distribution</Text>
       <View className="flex-row -mx-1">
         <StatCard label="🌟 Top" value={data?.tier_distribution?.top ?? 0} accent="#15803D" />
-        <StatCard label="🔷 Mid" value={data?.tier_distribution?.mid ?? 0} accent="#1D4ED8" />
+        <StatCard label="🔷 Mid" value={data?.tier_distribution?.mid ?? 0} accent="#3660d4" />
         <StatCard label="⚠️ Lower" value={data?.tier_distribution?.lower ?? 0} accent="#B91C1C" />
       </View>
 
