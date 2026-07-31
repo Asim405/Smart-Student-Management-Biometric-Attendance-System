@@ -27,6 +27,7 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <ScrollView contentContainerClassName="flex-grow justify-center px-6 py-10 bg-gray-50">
+      <Text className="text-2xl font-extrabold text-gray-900 text-center mb-1.5">Smart Student System</Text>
       <Text className="text-2xl font-extrabold text-gray-900 text-center mb-6">Create Account</Text>
 
       <View className="flex-row mb-4 gap-2.5">
