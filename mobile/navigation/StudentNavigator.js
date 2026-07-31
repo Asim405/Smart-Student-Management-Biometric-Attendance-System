@@ -15,7 +15,7 @@ export default function StudentNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerTitleStyle: { fontWeight: '700' },
-        tabBarActiveTintColor: '#4F46E5',
+        tabBarActiveTintColor: '#5e57e8',
         tabBarIcon: () => <Text style={{ fontSize: 18 }}>{ICONS[route.name]}</Text>,
       })}
     >
