@@ -26,6 +26,7 @@ export default function LoginScreen({ navigation }) {
       className="flex-1 justify-center px-6 bg-gray-50"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <Text className="text-2xl font-extrabold text-gray-900 text-center">LOGIN PAGE</Text>
       <Text className="text-2xl font-extrabold text-gray-900 text-center">Smart Student System</Text>
       <Text className="text-sm text-gray-500 text-center mt-1.5 mb-8">Sign in to continue</Text>
 
