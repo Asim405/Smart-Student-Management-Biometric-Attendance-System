@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 const ACCENT_TEXT = {
-  '#5952e0': 'text-brand', '#0EA5E9': 'text-brandSky', '#F59E0B': 'text-brandAmber',
-  '#15803D': 'text-tierTopFg', '#1D4ED8': 'text-tierMidFg', '#B91C1C': 'text-tierLowFg',
+  '#5952e0': 'text-brand', '#0EA5E9': 'text-brandSky', '#f4a824': 'text-brandAmber',
+  '#15803D': 'text-tierTopFg', '#1D4ED8': 'text-tierMidFg', '#b52e2e': 'text-tierLowFg',
 };
 
 export default function StatCard({ label, value, accent = '#4F46E5' }) {
