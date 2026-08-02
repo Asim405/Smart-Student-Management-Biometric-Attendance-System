@@ -14,10 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-// Make io reachable from controllers via req.app.get('io'), so the
-// attendance controller can broadcast without importing the socket
-// module directly (avoids a circular import between server.js and
-// controllers/attendanceController.js).
+
 app.set('io', io);
 
 app.use(cors());
@@ -41,6 +38,5 @@ initSockets(io);
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
-  
   
 });
